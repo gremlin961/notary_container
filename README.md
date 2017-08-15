@@ -1,2 +1,2 @@
 # notary_container
-Docker Notary Container Build Script
+Docker Notary Container Build Instructions
