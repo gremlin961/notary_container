@@ -1,0 +1,66 @@
+### Create a new container and mount the needed SSL certs and UCP client bundle ###
+
+docker run -it --privileged -v /var/run/docker.sock:/var/run/docker.sock -v ~/Documents/demo/certs:/certs -v ~/Documents/demo/ucp-bundles/qa:/bundle --name qa --hostname qa docker:edge-dind /bin/sh
+
+### Run the following commands from within the container ###
+
+apk update && apk add ca-certificates && update-ca-certificates && apk add openssl
+
+wget https://github.com/docker/notary/releases/download/v0.4.3/notary-Linux-amd64 -O notary
+chmod +x notary
+mv notary /usr/bin/
+
+cp /certs/* /usr/local/share/ca-certificates/
+update-ca-certificates
+
+notary key import bundle/key.pem
+
+mkdir -p ~/.docker/trust
+
+cat <<EOT >  ~/.notary/config.json
+{
+  "trust_dir" : "~/.docker/trust",
+  "remote_server": {
+    "url": "https://dtr.richard.dtcntr.net",
+    "root_ca": "/certs/dtr-ca.pem"
+  }
+}
+EOT
+
+export DOCKER_CONTENT_TRUST=1
+docker login dtr.richard.dtcntr.net
+notary init --publish dtr.richard.dtcntr.net/prod/flask-test
+
+notary delegation add --publish dtr.richard.dtcntr.net/prod/flask-test targets/releases --all-paths /bundle/cert.pem
+notary delegation add --publish dtr.richard.dtcntr.net/prod/flask-test targets/qa --all-paths /bundle/cert.pem
+notary key import bundle/key.pem
+
+
+### --- Additional useful commands --- ###
+
+
+### Remove signing from an image ###
+
+notary list dtr.richard.dtcntr.net/prod/flask-test
+notary remove -p dtr.richard.dtcntr.net/prod/flask-test latest -r targets/releases
+notary remove -p dtr.richard.dtcntr.net/prod/flask-test latest -r targets/qa
+notary remove -p dtr.richard.dtcntr.net/prod/flask-test latest -r targets
+
+### Delete local and remote trusted root files ###
+
+notary delete --remote dtr.richard.dtcntr.net/prod/flask-test
+notary delete dtr.richard.dtcntr.net/prod/flask-test
+
+
+### other helpful command ###
+
+notary status dtr.richard.dtcntr.net/prod/flask-test
+
+notary list dtr.richard.dtcntr.net/prod/flask-test
+
+alias notary="notary --server https://dtr.richard.dtcntr.net --trustDir ~/.docker/trust --tlscacert dtr-ca.pem"
+
+docker login dtr.richard.dtcntr.net
+docker pull dtr.richard.dtcntr.net/prod/flask-test
+docker tag dtr.richard.dtcntr.net/dev/flask-test dtr.richard.dtcntr.net/prod/flask-test:v01
+docker push dtr.richard.dtcntr.net/prod/flask-test:v01
