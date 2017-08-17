@@ -3,7 +3,7 @@
 # To run the container, use:
 # docker run -it --privileged -v /var/run/docker.sock:/var/run/docker.sock notary:latest
 #
-# Created by rkiles on 08/17/2017
+# Created by Richard Kiles on 08/17/2017
 
 
 FROM docker:edge-dind
