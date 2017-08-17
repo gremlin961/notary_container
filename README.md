@@ -9,7 +9,6 @@ You can access this image on Docker Hub at the following location:
 https://hub.docker.com/r/gremlin961/notary-container/
 
 
-Docker Notary Container Build Instructions
-
 You can manually build the image by cloning this repo and issuing the following build command:
+
 docker build -t notary-container:latest .
