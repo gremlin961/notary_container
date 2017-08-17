@@ -1,0 +1,14 @@
+This container can be used to digitally sign Docker images. The following commands can be used to help configure this system.
+
+To properly run the notary client for the fist time:
+docker run -it --privileged -v /var/run/docker.sock:/var/run/docker.sock --name notary notary:latest
+
+Start the notary client after setup:
+docker start -it notary
+
+docker login dtr.richard.dtcntr.net
+notary init --publish dtr.richard.dtcntr.net/prod/flask-test
+
+notary delegation add --publish dtr.richard.dtcntr.net/prod/flask-test targets/releases --all-paths /bundle/cert.pem
+notary delegation add --publish dtr.richard.dtcntr.net/prod/flask-test targets/qa --all-paths /bundle/cert.pem
+notary key import bundle/key.pem
