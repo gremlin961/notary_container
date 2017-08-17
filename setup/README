@@ -1,14 +1,44 @@
 This container can be used to digitally sign Docker images. The following commands can be used to help configure this system.
 
-To properly run the notary client for the fist time:
+### To setup the notary client container for the first time ###
 docker run -it --privileged -v /var/run/docker.sock:/var/run/docker.sock --name notary notary:latest
 
-Start the notary client after setup:
-docker start -it notary
 
-docker login dtr.richard.dtcntr.net
-notary init --publish dtr.richard.dtcntr.net/prod/flask-test
+### Start the notary client after setup ###
+docker start -i SYSNAME
 
-notary delegation add --publish dtr.richard.dtcntr.net/prod/flask-test targets/releases --all-paths /bundle/cert.pem
-notary delegation add --publish dtr.richard.dtcntr.net/prod/flask-test targets/qa --all-paths /bundle/cert.pem
+
+### Login to the DTR and initialize a repo to use signing (this is performed on a per repo basis). Replace "name_of_your_repo" with the full path to your repository. ###
+docker login DTR_URL
+notary init --publish DTR_URL/name_of_your_repo
+
+
+### Add key delegation to a repo for your singing team. Replace "your_team_name" with the team name you specified in the Content Trust section of your UCP. ###
+
+notary delegation add --publish DTR_URL/name_of_your_repo targets/releases --all-paths /bundle/cert.pem
+notary delegation add --publish DTR_URL/name_of_your_repo targets/your_team_name --all-paths /bundle/cert.pem
 notary key import bundle/key.pem
+
+
+### Remove signing from an image. Replace "tag_name" with the name of the signed tag ###
+
+notary list DTR_URL/name_of_your_repo
+notary remove -p DTR_URL/name_of_your_repo tag_name -r targets/releases
+notary remove -p DTR_URL/name_of_your_repo tag_name -r targets/your_team_name
+notary remove -p DTR_URL/name_of_your_repo tag_name -r targets
+
+
+### Delete local and remote trusted root files ###
+
+notary delete --remote DTR_URL/name_of_your_repo
+notary delete DTR_URL/name_of_your_repo
+
+
+### other helpful commands ###
+
+notary status DTR_URL/name_of_your_repo
+notary list DTR_URL/name_of_your_repo
+
+
+### For more detailed information please visit ###
+https://docs.docker.com/datacenter/dtr/2.3/guides/user/manage-images/sign-images/
