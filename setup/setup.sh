@@ -31,3 +31,5 @@ cat <<EOT >  ~/.notary/config.json
   }
 }
 EOT
+
+echo "Setup is complete. Please review /setup/README for more information."
