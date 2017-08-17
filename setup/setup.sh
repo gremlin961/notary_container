@@ -5,6 +5,7 @@ read -p "Enter the FQDN of your UCP (i.e. ucp.myorg.net): " UCP_URL
 read -p "Enter the FQDN of your DTR (i.e. dtr.myorg.net): " DTR_URL
 read -p "Enter your username: " USERNAME
 read -s -p "Enter your password: " PASSWORD
+echo ""
 
 # Begin container customization
 echo "Starting container customization"
