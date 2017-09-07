@@ -3,6 +3,7 @@ import requests
 import zipfile
 import io
 import getpass
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 
 class GetBundle:
@@ -12,6 +13,9 @@ class GetBundle:
 
         self.url = url
         self.token = token
+
+        # Hide the insecure request warning message
+        requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
         # Create a dictionary of the token data to use with the request header
         headerauth = {"Authorization":"Bearer " + self.token + ""}
