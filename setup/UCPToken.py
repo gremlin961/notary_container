@@ -1,6 +1,8 @@
 import json
 import requests
 import getpass
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+
 
 class GetToken:
     '''Request and authentication token from a UCP controller'''
@@ -9,6 +11,9 @@ class GetToken:
         self.url = url
         self.user = user
         self.password = password
+
+        # Hide the insecure request warning message
+        requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
         # Define the credentials that will be used to access the UCP and request a token
         ucpcreds = '{"username":"' + self.user + '","password":"' + self.password + '"}'
