@@ -10,10 +10,11 @@ FROM docker:edge-dind
 MAINTAINER Richard D Kiles <richard.kiles@docker.com>
 WORKDIR /tmp
 ADD ./setup/ /setup/
-RUN apk update && apk add ca-certificates openssl curl jq && update-ca-certificates
+RUN apk update && apk add ca-certificates openssl curl jq python3 && update-ca-certificates
 RUN wget https://github.com/docker/notary/releases/download/v0.4.3/notary-Linux-amd64 -O notary && chmod +x notary && mv notary /usr/bin/
-RUN mkdir -p ~/.docker/trust && mkdir -p ~/.notary && mkdir -p /bundle
+RUN mkdir -p ~/.docker/trust && mkdir -p ~/.notary && mkdir -p /bundle && mkdir -p /certs
 RUN chmod +x /setup/setup.sh && chmod +x /setup/run.sh
+RUN pip3 install -r /setup/requirements.txt
 WORKDIR /
 ENV DOCKER_CONTENT_TRUST 1
 CMD /setup/run.sh
