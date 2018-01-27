@@ -29,8 +29,8 @@ if __name__=='__main__':
     # Prompt for the username, password, UCP_URL and DTR_URL
     UCP_URL = input("Enter the FQDN of your UCP (i.e. ucp.myorg.net):  ")
     UCP_PORT = input("Enter the port of your UCP (Optional, default is 443):  ") or 443
-    DTR_URL = input("Enter the port of your DTR (i.e. dtr.myorg.net):  ")
-    DTR_PORT = input("Enter the FQDN of your DTR (Optional, default is 443):  ") or 443
+    DTR_URL = input("Enter the FQDN of your DTR (i.e. dtr.myorg.net):  ")
+    DTR_PORT = input("Enter the port of your DTR (Optional, default is 443):  ") or 443
     USERNAME = input("Enter your UCP username:  ")
     PASSWORD = getpass.getpass('Enter your UCP password:  ')
     print("")
